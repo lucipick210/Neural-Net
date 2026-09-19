@@ -7,12 +7,12 @@ typedef struct{
     float bias;
 }Neuron;
 float neuron_forward(Neuron *neuron, float x1,float x2);
-Neuron neuron_create();
+Neuron neuron_create(void);
 
 void neuron_train(Neuron *neuron,
                   float x1,
                   float x2,
-                  float target,
+                  float neuron_gradient,
                   float learning_rate);
 
 #endif

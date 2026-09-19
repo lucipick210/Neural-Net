@@ -1,95 +1,136 @@
 #include <stdio.h>
-// #include "matrix.h"
-// #include "activation.h"
 #include "neural_network.h"
+#include "activation.h"
+#include <stdlib.h>
+#include <time.h>
+
 int main()
 {
-    // Matrix a = matrix_create(2, 2);
-    // Matrix b = matrix_create(2, 2);
-    // matrix_set(&a,0,0,1);
-    // matrix_set(&a,0,1,2);
-    // matrix_set(&a,1,0,3);
-    // matrix_set(&a,1,1,4);
-    
-    // matrix_set(&b,0,0,5);
-    // matrix_set(&b,0,1,6);
-    // matrix_set(&b,1,0,7);
-    // matrix_set(&b,1,1,8);
-    // Matrix c = matrix_mul(&a,&b);
-    // if(c.data == NULL){
-    //     printf("Eroare la inmultire.\n");
-    // }
-    // Matrix suma = matrix_add(&a,&b);
-    // printf("Numarul: %.2f\n",matrix_get(&a,1,0));
-    // matrix_print(&c);
-    // printf("\nSuma:\n");
-    // matrix_print(&suma);
+    srand(5);
+    Neuron neuron1 = neuron_create();
+    Neuron neuron2 = neuron_create();
+    Neuron neuron3 = neuron_create();
 
-    // matrix_free(&a);
-    // matrix_free(&b);
-    // matrix_free(&c);
-    // matrix_free(&suma);
-    // printf("Sigmoid(-5)%.5f\n",sigmoid(-5));
-    // printf("Sigmoid(0)%.5f\n",sigmoid(0));
-    // printf("Sigmoid(5) %.5f\n",sigmoid(5));
-    // printf("Tanh(-5) = %.5f\n", tanh_activation(-5));
-    // printf("Tanh(0) = %.5f\n", tanh_activation(0));
-    // printf("Tanh(5) = %.5f\n", tanh_activation(5));
-    // Matrix a = matrix_create(2, 3);
+    float x1[] = {0, 0, 1, 1};
+    float x2[] = {0, 1, 0, 1};
+    float target[] = {0, 1, 1, 0};
 
-    // matrix_set(&a, 0, 0, 1.5);
-    // matrix_set(&a, 0, 1, -2.0);
-    // matrix_set(&a, 0, 2, 3.0);
+    for (int i = 0; i < 10000; i++)
+    {
+        float total_loss = 0.0f;
+        
 
-    // matrix_set(&a, 1, 0, -4.0);
-    // matrix_set(&a, 1, 1, 0.5);
-    // matrix_set(&a, 1, 2, -1.0);
+        for (int j = 0; j < 4; j++)
+        {
+            float output_n1 =
+                neuron_forward(&neuron1, x1[j], x2[j]);
 
-    // Matrix b = matrix_sigmoid(&a);
-    // matrix_print(&a);
-    // printf("\n\n");
-    // matrix_print(&b);
-    // matrix_free(&a);
-    // matrix_free(&b);
-    Neuron neuron1;
+            float output_n2 =
+                neuron_forward(&neuron2, x1[j], x2[j]);
 
-    neuron1.w1 = 0.5;
-    neuron1.w2 = 0.2;
-    neuron1.bias = 0.1;
+            float output_n3 =
+                neuron_forward(&neuron3, output_n1, output_n2);
 
-    float output = neuron_forward(&neuron1, 2.0, 3.0);
+            float error = output_n3 - target[j];
 
-    printf("Neuron output: %.2f\n", output);
-    neuron1.w1 = -1.0;
-    neuron1.w2 = -1.0;
-    neuron1.bias = 0.0;
+            float loss = 0.5f * error * error;
 
-    output = neuron_forward(&neuron1, 2.0, 3.0);
+            total_loss += loss;
 
-    printf("Neuron output: %.2f\n", output);        
+            float z3 =
+                neuron3.w1 * output_n1 +
+                neuron3.w2 * output_n2 +
+                neuron3.bias;
 
+            float relu_gradient;
 
-    Neuron neuron = neuron_create();
+            if (z3 > 0.0f)
+                relu_gradient = 1.0f;
+            else
+                relu_gradient = 0.01f;
 
-    printf("w1 = %.3f\n", neuron.w1);
-    printf("w2 = %.3f\n", neuron.w2);
-    printf("bias = %.3f\n\n", neuron.bias);
-    for(int i = 0;i<=6;i++){
-        neuron_train(&neuron,0,0,0,0.5);
-        neuron_train(&neuron,0,1,0,0.5);
-        neuron_train(&neuron,1,0,0,0.5);
-        neuron_train(&neuron,1,1,1,0.5);
-        printf("w1 = %.3f\n", neuron.w1);
-        printf("w2 = %.3f\n", neuron.w2);
-        printf("bias = %.3f\n", neuron.bias);
+            float gradient_z3 =
+                error * relu_gradient;
+
+            float gradient_h1 =
+                gradient_z3 * neuron3.w1;
+
+            float gradient_h2 =
+                gradient_z3 * neuron3.w2;
+
+            neuron_train(
+                &neuron1,
+                x1[j],
+                x2[j],
+                gradient_h1,
+                0.01f
+            );
+
+            neuron_train(
+                &neuron2,
+                x1[j],
+                x2[j],
+                gradient_h2,
+                0.01f
+            );
+
+            neuron_train(
+                &neuron3,
+                output_n1,
+                output_n2,
+                error,
+                0.01f
+            );
+        }
+
+        if (i % 1000 == 0)
+        {
+            printf("Epoca: %d | loss: %.6f\n",
+                i,
+                total_loss / 4.0f);
+
+            printf("N1: w1=%.4f w2=%.4f b=%.4f\n",
+                neuron1.w1,
+                neuron1.w2,
+                neuron1.bias);
+
+            printf("N2: w1=%.4f w2=%.4f b=%.4f\n",
+                neuron2.w1,
+                neuron2.w2,
+                neuron2.bias);
+
+            printf("N3: w1=%.4f w2=%.4f b=%.4f\n\n",
+                neuron3.w1,
+                neuron3.w2,
+                neuron3.bias);
+        }
     }
-    float output1 = neuron_forward(&neuron,0,0);
-    float output2 = neuron_forward(&neuron,0,1);
-    float output3 = neuron_forward(&neuron,1,0);
-    float output4 = neuron_forward(&neuron,1,1);
-    printf("Neuron1 output: %.2f\n",output1);
-    printf("Neuron2 output: %.2f\n",output2);
-    printf("Neuron3 output: %.2f\n",output3);
-    printf("Neuron4 output: %.2f\n",output4);   
+
+    printf("\n========== TEST ==========\n");
+
+    for (int j = 0; j < 4; j++)
+    {
+        float output_n1 =
+            neuron_forward(&neuron1, x1[j], x2[j]);
+
+        float output_n2 =
+            neuron_forward(&neuron2, x1[j], x2[j]);
+
+        float output_n3 =
+            neuron_forward(
+                &neuron3,
+                output_n1,
+                output_n2
+            );
+
+        printf(
+            "%.0f XOR %.0f = %.4f\n",
+            x1[j],
+            x2[j],
+            output_n3
+        );
+    }
+
     return 0;
 }
+

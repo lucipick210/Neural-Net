@@ -5,7 +5,7 @@ float relu(float x){
     if(x>0){
         return x;
     }else{
-        return 0;
+        return 0.0f;
     }
 }
 
@@ -14,7 +14,7 @@ float sigmoid(float x){
 }
 
 float tanh_activation(float x){
-    return (exp(x)-exp(-x))/(exp(x)+exp(-x));
+    return tanhf(x);
 }
 
 Matrix matrix_relu(Matrix *matrix){
@@ -22,9 +22,8 @@ Matrix matrix_relu(Matrix *matrix){
     for(int i = 0;i< matrix->rows;i++){
         for(int j = 0;j<matrix->cols;j++){
             float value = matrix_get(matrix,i,j);
-            value = relu(value);
             
-            matrix_set(&result,i,j,value);
+            matrix_set(&result,i,j,relu(value));
 
         }
     }
@@ -36,10 +35,8 @@ Matrix matrix_sigmoid(Matrix *matrix){
     Matrix result = matrix_create(matrix->rows,matrix->cols);
     for(int i = 0;i< matrix->rows;i++){
         for(int j = 0;j<matrix->cols;j++){
-            float value = matrix_get(matrix,i,j);
-            value = sigmoid(value);
-            
-            matrix_set(&result,i,j,value);
+            float value = matrix_get(matrix,i,j);            
+            matrix_set(&result,i,j,sigmoid(value));
 
         }
     }
@@ -51,11 +48,19 @@ Matrix matrix_tanh(Matrix *matrix){
     for(int i = 0;i< matrix->rows;i++){
         for(int j = 0;j<matrix->cols;j++){
             float value = matrix_get(matrix,i,j);
-            value = tanh_activation(value);
+
             
-            matrix_set(&result,i,j,value);
+            matrix_set(&result,i,j,tanh_activation(value));
 
         }
     }
     return result;
+}
+
+float leaky_relu(float x){
+    if(x<=0){
+        return x*0.01f;
+    }else{
+        return x;
+    }
 }
