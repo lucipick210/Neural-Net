@@ -64,3 +64,45 @@ float leaky_relu(float x){
         return x;
     }
 }
+
+
+void softmax(float *inputs,float *outputs,int count){
+    float max = inputs[0];
+
+    for(int i=1;i<count;i++){
+        if(inputs[i]>max)
+            max=inputs[i];
+    }
+
+    float sum=0.0f;
+
+    for(int i=0;i<count;i++){
+        outputs[i]=expf(inputs[i]-max);
+        sum+=outputs[i];
+    }
+
+    if(!isfinite(sum) || sum<=0.0f){
+        for(int i=0;i<count;i++)
+            outputs[i]=0.0f;
+
+        return;
+    }
+
+    for(int i=0;i<count;i++){
+        outputs[i]/=sum;
+    }
+}
+
+
+float cross_entropy(float *prediction,float *targets,int count){
+    float loss = 0.0f;
+    for(int i = 0;i<count;i++){
+        float p = prediction[i];
+        if(p < 1e-7f){
+            p = 1e-7f;
+        }
+
+        loss-=targets[i]*logf(p);
+    }
+    return loss;
+}

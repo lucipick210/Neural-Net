@@ -8,4 +8,6 @@ float tanh_activation(float x);
 Matrix matrix_relu(Matrix *matrix);
 Matrix matrix_sigmoid(Matrix *matrix);
 Matrix matrix_tanh(Matrix *matrix);
+void softmax(float *inputs,float *outputs,int count);
+float cross_entropy(float *prediction,float *targets,int count);
 #endif
