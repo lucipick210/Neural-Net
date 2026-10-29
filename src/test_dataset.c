@@ -102,7 +102,7 @@ int main()
 
     printf("Loading model...\n");
 
-    if(!model_load(&network,"models/model.bin")){
+    if(!model_load(&network,"models/mixed_model.bin")){
         printf("Could not load model!\n");
         network_free(&network);
         return 0;
