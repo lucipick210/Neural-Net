@@ -151,44 +151,34 @@ During training mode, the correct digit can be selected directly using the GUI b
 NeuralNet-C/
 │
 ├── data/
-│   ├── train-images-idx3-ubyte
-│   ├── train-labels-idx1-ubyte
-│   ├── t10k-images-idx3-ubyte
-│   └── t10k-labels-idx1-ubyte
 │
 ├── drawings/
-│   ├── 0_001.pgm
-│   ├── 0_002.pgm
-│   ├── ...
-│   └── 9_010.pgm
 │
 ├── include/
-│   ├── activation.h
-│   ├── gui.h
-│   ├── matrix.h
-│   ├── mnist.h
-│   ├── model.h
-│   └── neural_network.h
 │
 ├── models/
-│   ├── model.bin
-│   ├── mixed_model.bin
-│   ├── custom_model.bin
-│   └── interactive_model.bin
-│
-├── screenshots/
-│   └── digit-recognizer.png
 │
 ├── src/
 │   ├── activation.c
+│   ├── gradient_check.c
 │   ├── gui.c
 │   ├── main.c
-│   ├── matrix.c
 │   ├── mnist.c
+│   ├── mnist.h
 │   ├── model.c
-│   └── neural_network.c
+│   ├── neural_network.c
+│   ├── neural_network.h
+│   │
+│   ├── test_custom_dataset.c
+│   ├── test_custom_mnist.c
+│   ├── test_dataset.c
+│   ├── test_image.c
+│   │
+│   ├── train_custom.c
+│   └── train_mixed.c
 │
-└── README.md
+├── README.md
+└── ...
 ```
 
 ## Technologies
